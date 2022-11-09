@@ -14,11 +14,15 @@ from time import sleep
 import ipaddress
 import logging
 import requests
+from datetime import datetime
+
+
 logging.basicConfig(
     format='%(asctime)s %(levelname)s: %(message)s',
     datefmt='%m/%d/%Y %I:%M:%S %p',
     level=logging.INFO
 )
+
 
 class App(Tk):
     def __init__(self):
@@ -218,18 +222,26 @@ class App(Tk):
             return "XML=%3CCiscoIPPhoneExecute%3E%3CExecuteItem%20URL%3D%22Key%3ANavRight%22%2F%3E%3C%2FCiscoIPPhoneExecute%3E"
 
         def parse(response):
+            now = datetime.now()
+            dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
             if response == '<CiscoIPPhoneError Number="1" />':
-                logging.info('Error parsing CiscoIPPhoneExecute object')
+                self.insert_log(f"{dt_string} INFO: Error parsing CiscoIPPhoneExecute object")
+                return False
             elif response == '<CiscoIPPhoneError Number="2" />':
-                logging.info('Error framing CiscoIPPhoneResponse object')
+                self.insert_log(f"{dt_string} INFO: Error framing CiscoIPPhoneResponse object")
+                return False
             elif response == '<CiscoIPPhoneError Number="3" />':
-                logging.info('Internal file error')
+                self.insert_log(f"{dt_string} INFO: nternal file error")
+                return False
             elif response == '<CiscoIPPhoneError Number="4" />':
-                logging.info('Authentication Error')
+                self.insert_log(f"{dt_string} INFO: Authentication Error")
+                return False
             elif 'Success' in response:
-                logging.info('OK')
+                self.insert_log(f"{dt_string} INFO: OK")
+                return True
             else:
                 logging.info(response)
+                return False
 
         def remoteCTI(phone, payload):
             url = "http://" + phone + "/CGI/Execute"
@@ -240,6 +252,8 @@ class App(Tk):
                 parse(response.text)
             except requests.exceptions.RequestException as e:
                 logging.info(e)
+                self.insert_log(f"{e}")
+                return
             sleep(1)
 
         def promptForIP():
@@ -303,6 +317,7 @@ class App(Tk):
 
         else:
             print('Unknown command: {}'.format(key))
+
 
 if __name__ == '__main__':
     app = App()
