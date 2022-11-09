@@ -76,7 +76,11 @@ class App(Tk):
             username = self.accounts[0]
             password = self.accounts[1]
             for i in steps:
-                self.Insert_Key(ipaddr, username, password, i)
+                if self.Insert_Key(ipaddr, username, password, i):
+                    pass
+                else:
+                    self.insert_log(f"{model} config Error")
+                    return False
         else:
             self.insert_log(f"model {model} not found steps")
 
@@ -240,7 +244,7 @@ class App(Tk):
                 self.insert_log(f"{dt_string} INFO: OK")
                 return True
             else:
-                logging.info(response)
+                self.insert_log(f"{response} INFO: OK")
                 return False
 
         def remoteCTI(phone, payload):
@@ -249,7 +253,11 @@ class App(Tk):
             try:
                 response = requests.request("POST", url, auth=HTTPBasicAuth(username, password), data=payload,
                                             headers=headers)
-                parse(response.text)
+                if parse(response.text):
+                    sleep(1.5)
+                    return True
+                else:
+                    return False
             except requests.exceptions.RequestException as e:
                 logging.info(e)
                 self.insert_log(f"{e}")
@@ -269,51 +277,73 @@ class App(Tk):
 
         if key.isdigit():
             if len(key) == 1:
-                remoteCTI(phone, keypad(key))
+                if remoteCTI(phone, keypad(key)):
+                    return True
+                else:
+                    return False
             else:
                 for i in range(1, int(key)):
                     remoteCTI(phone, down())
 
         elif key == '*':
-            remoteCTI(phone, star())
+            if remoteCTI(phone, star()):
+                return True
+            else:
+                return False
 
         elif key == '#':
-            remoteCTI(phone, pound())
+            if remoteCTI(phone, pound()):
+                return True
+            else:
+                return False
 
         elif len(key) == 2 and key[:1] == 's' and key[1:].isdigit():
-            remoteCTI(phone, softkey(key[1:]))
+            if remoteCTI(phone, softkey(key[1:])):
+                return True
+            else:
+                return False
 
         elif key.lower() == 's' or key.lower() == "settings":
-            remoteCTI(phone, settings())
+            if remoteCTI(phone, settings()):
+                return True
+            else:
+                return False
 
         elif key.lower() == 'a' or key.lower() == 'applications':
-            remoteCTI(phone, applications())
+            if remoteCTI(phone, applications()):
+                return True
+            else:
+                return False
 
         elif key.lower() == 'e' or key.lower() == 'enter':
-            remoteCTI(phone, enter())
+            if remoteCTI(phone, enter()):
+                return True
+            else:
+                return False
 
         elif key.lower() == 'l' or key.lower() == 'left':
-            remoteCTI(phone, left())
+            if remoteCTI(phone, left()):
+                return True
+            else:
+                return False
 
         elif key.lower() == 'r' or key.lower() == 'right':
-            remoteCTI(phone, right())
+            if remoteCTI(phone, right()):
+                return True
+            else:
+                return False
 
         elif key.lower() == 'u' or key.lower() == 'up':
-            remoteCTI(phone, up())
+            if remoteCTI(phone, up()):
+                return True
+            else:
+                return False
 
         elif key.lower() == 'd' or key.lower() == 'down':
-            remoteCTI(phone, down())
-
-        elif key == 'exit':
-            exit()
-
-        elif key == 'help':
-            print('============================================')
-            print('Type the key you wish to press, one at a time')
-            print('0-9, # and * will press the respective digit')
-            print('for Softkeys, prepend with s.. ie: s1 for Softkey 1')
-            print('for Settings, type s - Applications, type a')
-            print('============================================\n')
+            if remoteCTI(phone, down()):
+                return True
+            else:
+                return False
 
         else:
             print('Unknown command: {}'.format(key))
