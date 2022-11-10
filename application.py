@@ -38,35 +38,49 @@ class App(Tk):
 
         self.lbl_ip_addr = Label(self.group, text="IP Address")
         self.lbl_ip_addr.grid(row=0, column=1, sticky=N)
-        self.entry_ipaddr = Entry(self.group, width=10)
+        self.entry_ipaddr = Entry(self.group, width=15)
         self.entry_ipaddr.grid(row=0, column=2, sticky=W + N)
 
         self.username = Label(self.group, text="Username")
         self.username.grid(row=1, column=1, sticky=N)
-        self.entry_user = Entry(self.group, width=10)
+        self.entry_user = Entry(self.group, width=15)
         self.entry_user.grid(row=1, column=2, sticky=W+N)
 
         self.password = Label(self.group, text="Password")
         self.password.grid(row=2, column=1, sticky=N+W)
-        self.entry_passw = Entry(self.group, width=10, show="*")
+        self.entry_passw = Entry(self.group, width=15, show="*")
         self.entry_passw.grid(row=2, column=2, sticky=N+W)
 
         self.btn_start = Button(self.group, text="Erase", command=self.start_Thread)
         self.btn_start.grid(row=3, column=2)
 
-    def Settings(self):
-        settingsWindow = Toplevel()
-        settingsWindow.title("Account")
-        Label(settingsWindow, text="username").grid(row=0)
-        Label(settingsWindow, text="password").grid(row=1)
-        user = StringVar()
-        Entry(settingsWindow, width=10, textvariable=user).grid(row=0, column=1)
-        passw = StringVar()
-        Entry(settingsWindow, width=10, show="*", textvariable=passw).grid(row=1, column=1)
-        Button(settingsWindow, text="Submit", command=settingsWindow.destroy).grid(row=3, columnspan=2)
-        settingsWindow.wait_window()
+        self.group_control = LabelFrame(self, text="Control account", pady=58)
+        self.group_control.grid(row=0, column=2)
 
-        return user.get(), passw.get()
+
+        self.lbl_account_user = Label(self.group_control, text="Username")
+        self.lbl_account_user.grid(row=1, column=0)
+        self.entry_control_user = Entry(self.group_control, width=15)
+        self.entry_control_user.grid(row=1, column=1, padx=5, pady=5)
+        
+        self.lbl_account_pass = Label(self.group_control, text="Password")
+        self.lbl_account_pass.grid(row=2, column=0)
+        self.entry_control_pass = Entry(self.group_control, width=15, show="*")
+        self.entry_control_pass.grid(row=2, column=1, padx=5, pady=5)
+
+    # def Settings(self):
+    #     settingsWindow = Toplevel()
+    #     settingsWindow.title("Account")
+    #     Label(settingsWindow, text="username").grid(row=0)
+    #     Label(settingsWindow, text="password").grid(row=1)
+    #     user = StringVar()
+    #     Entry(settingsWindow, width=10, textvariable=user).grid(row=0, column=1)
+    #     passw = StringVar()
+    #     Entry(settingsWindow, width=10, show="*", textvariable=passw).grid(row=1, column=1)
+    #     Button(settingsWindow, text="Submit", command=settingsWindow.destroy).grid(row=3, columnspan=2)
+    #     settingsWindow.wait_window()
+
+        # return user.get(), passw.get()
 
     def start_Thread(self):
         threading.Thread(target=self.main_app).start()
@@ -79,8 +93,10 @@ class App(Tk):
             step = " ".join(i for i in steps)
             self.insert_log(f"model {model} found step {str(step)}\nStarting Erase model {model}")
 
-            username = self.accounts[0]
-            password = self.accounts[1]
+            # username = self.accounts[0]
+            # password = self.accounts[1]
+            username = self.entry_control_user.get()
+            password = self.entry_control_user.get()
             for i in steps:
                 if self.Insert_Key(ipaddr, username, password, i):
                     pass
@@ -130,7 +146,7 @@ class App(Tk):
             self.insert_log(f"{i} --> IP: {ip} model: {model}")
             sleep(0.5)
         self.insert_log("Find steps to erase IP Phone")
-        self.accounts = self.Settings()
+        # self.accounts = self.Settings()
         for i in all_devices:
             self.Erase_Device(i)
 
