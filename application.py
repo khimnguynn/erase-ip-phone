@@ -35,18 +35,24 @@ class App(Tk):
         self.entry_log = Text(self.group, height=10, width=52, bg="#a3a3a3")
         self.entry_log.grid(row=0, column=0, rowspan=5)
         # button and Entry account
-        self.username = Label(self.group, text="username")
-        self.username.grid(row=0, column=1, sticky=N)
-        self.entry_user = Entry(self.group, width=10)
-        self.entry_user.grid(row=0, column=2, sticky=W+N)
 
-        self.password = Label(self.group, text="password")
-        self.password.grid(row=1, column=1, sticky=N+W)
+        self.lbl_ip_addr = Label(self.group, text="IP Address")
+        self.lbl_ip_addr.grid(row=0, column=1, sticky=N)
+        self.entry_ipaddr = Entry(self.group, width=10)
+        self.entry_ipaddr.grid(row=0, column=2, sticky=W + N)
+
+        self.username = Label(self.group, text="Username")
+        self.username.grid(row=1, column=1, sticky=N)
+        self.entry_user = Entry(self.group, width=10)
+        self.entry_user.grid(row=1, column=2, sticky=W+N)
+
+        self.password = Label(self.group, text="Password")
+        self.password.grid(row=2, column=1, sticky=N+W)
         self.entry_passw = Entry(self.group, width=10, show="*")
-        self.entry_passw.grid(row=1, column=2, sticky=N+W)
+        self.entry_passw.grid(row=2, column=2, sticky=N+W)
 
         self.btn_start = Button(self.group, text="Erase", command=self.start_Thread)
-        self.btn_start.grid(row=2, column=2)
+        self.btn_start.grid(row=3, column=2)
 
     def Settings(self):
         settingsWindow = Toplevel()
@@ -133,7 +139,8 @@ class App(Tk):
         self.entry_log.see("end")
 
     def Get_Sep_ID(self):
-        cucm = '10.168.30.11'
+        cucm = self.entry_ipaddr.get()
+
         self.username = self.entry_user.get()
         self.password = self.entry_passw.get()
         version = '12.5'
