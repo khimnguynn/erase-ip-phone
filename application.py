@@ -280,12 +280,13 @@ class App(Tk):
                     sleep(1.5)
                     return True
                 else:
+                    sleep(1)
                     return False
             except requests.exceptions.RequestException as e:
                 logging.info(e)
                 self.insert_log(f"{e}")
+                sleep(1)
                 return
-            sleep(1)
 
         def promptForIP():
             try:
