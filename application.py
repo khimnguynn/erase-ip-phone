@@ -57,7 +57,6 @@ class App(Tk):
         self.group_control = LabelFrame(self, text="Control account", pady=58)
         self.group_control.grid(row=0, column=2)
 
-
         self.lbl_account_user = Label(self.group_control, text="Username")
         self.lbl_account_user.grid(row=1, column=0)
         self.entry_control_user = Entry(self.group_control, width=15)
