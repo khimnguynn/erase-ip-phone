@@ -15,7 +15,7 @@ import ipaddress
 import logging
 import requests
 from datetime import datetime
-
+import ipaddress
 
 logging.basicConfig(
     format='%(asctime)s %(levelname)s: %(message)s',
@@ -54,33 +54,20 @@ class App(Tk):
         self.btn_start = Button(self.group, text="Erase", command=self.start_Thread)
         self.btn_start.grid(row=3, column=2)
 
-        self.group_control = LabelFrame(self, text="Control account", pady=58)
-        self.group_control.grid(row=0, column=2)
+        self.subnet_lbl = Label(self.group, text="Subnet", padx=10)
+        self.subnet_lbl.grid(row=0, column=3,columnspan=2, sticky=N)
+        self.entry_subnet = Entry(self.group, width=15)
+        self.entry_subnet.grid(row=0, column=5,columnspan=2, sticky=N)
 
-
-        self.lbl_account_user = Label(self.group_control, text="Username")
-        self.lbl_account_user.grid(row=1, column=0)
-        self.entry_control_user = Entry(self.group_control, width=15)
-        self.entry_control_user.grid(row=1, column=1, padx=5, pady=5)
+        self.lbl_account_user = Label(self.group, text="Username", padx=10)
+        self.lbl_account_user.grid(row=1, column=3,columnspan=2, sticky=N)
+        self.entry_control_user = Entry(self.group, width=15)
+        self.entry_control_user.grid(row=1, column=5,columnspan=2, sticky=N+W)
         
-        self.lbl_account_pass = Label(self.group_control, text="Password")
-        self.lbl_account_pass.grid(row=2, column=0)
-        self.entry_control_pass = Entry(self.group_control, width=15, show="*")
-        self.entry_control_pass.grid(row=2, column=1, padx=5, pady=5)
-
-    # def Settings(self):
-    #     settingsWindow = Toplevel()
-    #     settingsWindow.title("Account")
-    #     Label(settingsWindow, text="username").grid(row=0)
-    #     Label(settingsWindow, text="password").grid(row=1)
-    #     user = StringVar()
-    #     Entry(settingsWindow, width=10, textvariable=user).grid(row=0, column=1)
-    #     passw = StringVar()
-    #     Entry(settingsWindow, width=10, show="*", textvariable=passw).grid(row=1, column=1)
-    #     Button(settingsWindow, text="Submit", command=settingsWindow.destroy).grid(row=3, columnspan=2)
-    #     settingsWindow.wait_window()
-
-        # return user.get(), passw.get()
+        self.lbl_account_pass = Label(self.group, text="Password")
+        self.lbl_account_pass.grid(row=2, column=3,columnspan=2, sticky=N)
+        self.entry_control_pass = Entry(self.group, width=15, show="*")
+        self.entry_control_pass.grid(row=2, column=5,columnspan=2, sticky=N)
 
     def start_Thread(self):
         threading.Thread(target=self.main_app).start()
@@ -93,8 +80,6 @@ class App(Tk):
             step = " ".join(i for i in steps)
             self.insert_log(f"model {model} found step {str(step)}\nStarting Erase model {model}")
 
-            # username = self.accounts[0]
-            # password = self.accounts[1]
             username = self.entry_control_user.get()
             password = self.entry_control_user.get()
             for i in steps:
@@ -113,7 +98,7 @@ class App(Tk):
             if model == i.split(",")[0]:
                 return i.split(",")[1:]
         else:
-            return f"Not step for model {model}"
+            return f"Not found step for model {model}"
 
     @staticmethod
     def Check_Model_Exist(model):
@@ -128,27 +113,33 @@ class App(Tk):
             return False
 
     def main_app(self):
-        self.insert_log("Searching for device")
-        sep_id = self.Get_Sep_ID()
-        for i in sep_id:
-            self.insert_log(f"found {str(i)}")
-            sleep(0.5)
-        sleep(1)
-        self.insert_log("search model & IP from SEP ID")
+        ip_check = self.entry_ipaddr.get()
+        check = self.addressInNetwork(ip_check)
+        if check:
 
-        all_devices = []
-        for i in sep_id:
-            info = self.Get_IP_from_SEP(i)
-            ip = info[0]
-            model = str(info[1])
-            ip_n_model = {"ip": ip, "model": model}
-            all_devices.append(ip_n_model)
-            self.insert_log(f"{i} --> IP: {ip} model: {model}")
-            sleep(0.5)
-        self.insert_log("Find steps to erase IP Phone")
-        # self.accounts = self.Settings()
-        for i in all_devices:
-            self.Erase_Device(i)
+            self.insert_log("Searching for device")
+            sep_id = self.Get_Sep_ID()
+            for i in sep_id:
+                self.insert_log(f"found {str(i)}")
+                sleep(0.5)
+            sleep(1)
+            self.insert_log("search model & IP from SEP ID")
+
+            all_devices = []
+            for i in sep_id:
+                info = self.Get_IP_from_SEP(i)
+                ip = info[0]
+                model = str(info[1])
+                ip_n_model = {"ip": ip, "model": model}
+                all_devices.append(ip_n_model)
+                self.insert_log(f"{i} --> IP: {ip} model: {model}")
+                sleep(0.5)
+            self.insert_log("Find steps to erase IP Phone")
+            for i in all_devices:
+                self.Erase_Device(i)
+        else:
+            self.insert_log("Recheck your ip address and subnet")
+        self.insert_log("All Done")    
 
     def insert_log(self, text):
         self.entry_log.insert(END, f"{text}\n")
@@ -171,6 +162,10 @@ class App(Tk):
             return SEP
         except:
             messagebox.showerror("error", "username or password failed")
+
+    def addressInNetwork(self, ip):
+        subnet = self.entry_subnet.get()
+        return ipaddress.ip_address(ip) in ipaddress.ip_network(subnet)
 
     def Get_IP_from_SEP(self, sep):
         disable_warnings(InsecureRequestWarning)
@@ -374,5 +369,6 @@ class App(Tk):
 
 if __name__ == '__main__':
     app = App()
+    app.iconbitmap("icon.ico")
     app.title("SaoBacDau Erase IP Phone")
     app.mainloop()
