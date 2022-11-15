@@ -54,7 +54,7 @@ class App(Tk):
         self.btn_start.grid(row=3, column=2)
 
         self.subnet_lbl = Label(self.group, text="Subnet", padx=10)
-        self.subnet_lbl.grid(row=0, column=3,columnspan=2, sticky=N)
+        self.subnet_lbl.grid(row=0, column=3,columnspan=2, sticky=W+N)
         self.entry_subnet = Entry(self.group, width=15)
         self.entry_subnet.grid(row=0, column=5,columnspan=2, sticky=N)
 
