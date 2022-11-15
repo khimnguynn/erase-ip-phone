@@ -1,5 +1,4 @@
 import re
-
 from ciscoaxl import axl
 from tkinter import *
 from zeep import Client
