@@ -53,6 +53,7 @@ class App(Tk):
         self.btn_start = Button(self.group, text="Erase", command=self.start_Thread)
         self.btn_start.grid(row=3, column=2)
 
+
         self.subnet_lbl = Label(self.group, text="Subnet", padx=10)
         self.subnet_lbl.grid(row=0, column=3,columnspan=2, sticky=N)
         self.entry_subnet = Entry(self.group, width=15)
@@ -274,10 +275,12 @@ class App(Tk):
                     sleep(1.5)
                     return True
                 else:
+                    sleep(1)
                     return False
             except requests.exceptions.RequestException as e:
                 logging.info(e)
                 self.insert_log(f"{e}")
+                sleep(1)
                 return
 
         def promptForIP():
