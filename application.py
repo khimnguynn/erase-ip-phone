@@ -11,7 +11,6 @@ from urllib3.exceptions import InsecureRequestWarning
 from tkinter import messagebox
 import threading
 from time import sleep
-import ipaddress
 import logging
 import requests
 from datetime import datetime
@@ -280,7 +279,6 @@ class App(Tk):
                 logging.info(e)
                 self.insert_log(f"{e}")
                 return
-            sleep(1)
 
         def promptForIP():
             try:
