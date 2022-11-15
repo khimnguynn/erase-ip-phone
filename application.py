@@ -59,12 +59,12 @@ class App(Tk):
         self.entry_subnet = Entry(self.group, width=15)
         self.entry_subnet.grid(row=0, column=5,columnspan=2, sticky=N)
 
-        self.lbl_account_user = Label(self.group, text="Username", padx=10)
+        self.lbl_account_user = Label(self.group, text="Username CTI", padx=10)
         self.lbl_account_user.grid(row=1, column=3,columnspan=2, sticky=N)
         self.entry_control_user = Entry(self.group, width=15)
         self.entry_control_user.grid(row=1, column=5,columnspan=2, sticky=N+W)
         
-        self.lbl_account_pass = Label(self.group, text="Password")
+        self.lbl_account_pass = Label(self.group, text="Password CTI")
         self.lbl_account_pass.grid(row=2, column=3,columnspan=2, sticky=N)
         self.entry_control_pass = Entry(self.group, width=15, show="*")
         self.entry_control_pass.grid(row=2, column=5,columnspan=2, sticky=N)
