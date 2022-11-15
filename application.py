@@ -1,3 +1,5 @@
+import re
+
 from ciscoaxl import axl
 from tkinter import *
 from zeep import Client
@@ -115,7 +117,6 @@ class App(Tk):
         ip_check = self.entry_ipaddr.get()
         check = self.addressInNetwork(ip_check)
         if check:
-
             self.insert_log("Searching for device")
             sep_id = self.Get_Sep_ID()
             for i in sep_id:
@@ -167,9 +168,10 @@ class App(Tk):
         return ipaddress.ip_address(ip) in ipaddress.ip_network(subnet)
 
     def Get_IP_from_SEP(self, sep):
+        ipaddr = self.entry_ipaddr.get()
         disable_warnings(InsecureRequestWarning)
-        wsdl = 'https://ucm.sbdlab.net:8443/realtimeservice2/services/RISService70?wsdl'
-        location = 'https://ucm.sbdlab.net:8443/realtimeservice2/services/RISService70'
+        wsdl = f'https://{ipaddr}:8443/realtimeservice2/services/RISService70?wsdl'
+        location = f'https://{ipaddr}:8443/realtimeservice2/services/RISService70'
         binding = '{http://schemas.cisco.com/ast/soap}RisBinding'
 
         session = Session()
@@ -201,12 +203,21 @@ class App(Tk):
         try:
             resp = service.selectCmDeviceExt(CmSelectionCriteria=CmSelectionCriteria, StateInfo=StateInfo)
 
-            IP_Addr = resp["SelectCmDeviceResult"]["CmNodes"]["item"][1]["CmDevices"]["item"][0]["IPAddress"]["item"][0]["IP"]
-            Model = resp["SelectCmDeviceResult"]["CmNodes"]["item"][1]["CmDevices"]["item"][0]["Model"]
+            IP_Addr = re.findall("'IP': '(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\'", str(resp))
+            Model = re.findall("'Model': (\d+),", str(resp))
 
         except:
             return "None"
-        return IP_Addr, Model
+        if len(IP_Addr) == 0:
+            ip_model = "None"
+        else:
+            ip_model = IP_Addr[0]
+
+        if len(Model) == 0:
+            model = "None"
+        else:
+            model = Model[0]
+        return ip_model, model
 
     def Insert_Key(self, ip, username, password, key):
         def keypad(num):
@@ -269,7 +280,7 @@ class App(Tk):
             headers = {'Content-Type': "application/x-www-form-urlencoded"}
             try:
                 response = requests.request("POST", url, auth=HTTPBasicAuth(username, password), data=payload,
-                                            headers=headers)
+                                            headers=headers, verify=False)
                 if parse(response.text):
                     sleep(1.5)
                     return True
