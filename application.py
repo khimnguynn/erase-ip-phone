@@ -82,7 +82,7 @@ class App(Tk):
             self.insert_log(f"model {model} found step {str(step)}\nStarting Erase model {model}")
 
             username = self.entry_control_user.get()
-            password = self.entry_control_user.get()
+            password = self.entry_control_pass.get()
             for i in steps:
                 if self.Insert_Key(ipaddr, username, password, i):
                     pass
